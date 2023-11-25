@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId   Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  role     Role    @default(USER)
+  driver   Boolean @default(false)
+  status   Boolean @default(false)
+}
+
+model Routes {
+  routesId    Int           @id @default(autoincrement())
+  route       String
+  Destination Destination[]
+  Bus         Bus[]
+}
+
+model Destination {
+  destinationId Int    @id @default(autoincrement())
+  point         String
+  routes_id     Int
+  routes        Routes @relation(fields: [routes_id], references: [routesId])
+  Bus           Bus[]
+}
+
+model Bus {
+  busId          Int         @id @default(autoincrement())
+  busNumber      Int
+  status         Status      @default(notavailable)
+  routes_id      Int
+  destination_id Int
+  routes         Routes      @relation(fields: [routes_id], references: [routesId])
+  destination    Destination @relation(fields: [destination_id], references: [destinationId])
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  COADMIN
+  DRIVER
+  USER
+}
+
+enum Status {
+  waiting
+  intransit
+  lastride
+  issue
+  offline
+  notavailable
+}
