@@ -7,7 +7,7 @@ import GetStartedPage from "./pages/Onboarding/GetStartedPage.jsx";
 
 import EnableLocationPage from "./pages/Onboarding/EnableLocationPage.jsx";
 import LocationNotSupportedPage from "./pages/LocationNotSupportedPage.jsx";
-import RoutesPage from "./pages/RoutesPage.jsx";
+import RoutesPage from "./pages/User/RoutesPage.jsx";
 
 const router = createBrowserRouter([
   {

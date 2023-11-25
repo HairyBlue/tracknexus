@@ -5,7 +5,7 @@ export default function OnboardingLayout() {
   const tracknexusLocal = localStorage.getItem("tracknexus");
   if (tracknexusLocal) navigate("/routes", { replace: true });
   return (
-    <main>
+    <main className="flex justify-center items-center w-full h-screen">
       <Outlet />
     </main>
   );
