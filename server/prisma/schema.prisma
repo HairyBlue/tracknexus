@@ -10,49 +10,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  userId   Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  role     Role    @default(USER)
-  driver   Boolean @default(false)
-  status   Boolean @default(false)
-}
-
-model Routes {
-  routesId    Int           @id @default(autoincrement())
-  route       String
-  Destination Destination[]
-  Bus         Bus[]
-}
-
-model Destination {
-  destinationId Int    @id @default(autoincrement())
-  point         String
-  routes_id     Int
-  routes        Routes @relation(fields: [routes_id], references: [routesId])
-  Bus           Bus[]
-}
-
-model Bus {
-  busId          Int         @id @default(autoincrement())
-  busNumber      Int
-  status         Status      @default(notavailable)
-  routes_id      Int
-  destination_id Int
-  routes         Routes      @relation(fields: [routes_id], references: [routesId])
-  destination    Destination @relation(fields: [destination_id], references: [destinationId])
-}
-
+// ********************USER MODEL*****************************
 enum Role {
   SUPERADMIN
   ADMIN
   COADMIN
-  DRIVER
+  EMPLOYEE
   USER
 }
 
+model User {
+  userId    Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  driver    Boolean  @default(false)
+  status    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Todo      Todo[]
+  Driver    Driver[]
+}
+
+// ********************ROUTES MODEL*****************************
+model Routes {
+  routesId  Int      @id @default(autoincrement())
+  route     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Destination Destination[]
+  Bus         Bus[]
+}
+
+// ********************DESTINATION MODEL*****************************
+model Destination {
+  destinationId Int      @id @default(autoincrement())
+  point         String
+  routes_id     Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  routes Routes @relation(fields: [routes_id], references: [routesId])
+  Bus    Bus[]
+}
+
+// ********************BUS MODEL*****************************
 enum Status {
   waiting
   intransit
@@ -60,4 +64,66 @@ enum Status {
   issue
   offline
   notavailable
+}
+
+enum Condition {
+  operational
+  schedulemaintenance
+  undermaintenance
+  outofservice
+}
+
+model Bus {
+  busId          Int       @id @default(autoincrement())
+  busNumber      Int
+  status         Status    @default(notavailable)
+  condition      Condition @default(operational)
+  routes_id      Int
+  destination_id Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  routes      Routes      @relation(fields: [routes_id], references: [routesId])
+  destination Destination @relation(fields: [destination_id], references: [destinationId])
+  Driver      Driver[]
+}
+
+// ********************DRIVER MODEL*****************************
+model Driver {
+  driverId  Int      @id @default(autoincrement())
+  user_id   Int
+  bus_id    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [userId])
+  bus  Bus  @relation(fields: [bus_id], references: [busId])
+}
+
+// ********************TODO MODEL*****************************
+enum TodoStatus {
+  done
+  pending
+  review
+  change
+  todo
+}
+
+model Todo {
+  todoId    Int        @id @default(autoincrement())
+  title     String
+  content   String     @db.Text
+  comments  String     @db.Text
+  status    TodoStatus @default(todo)
+  user_id   Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user User @relation(fields: [user_id], references: [userId])
+}
+
+model UserActivity {
+  userActivityId Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
