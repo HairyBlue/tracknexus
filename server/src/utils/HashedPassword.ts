@@ -7,3 +7,4 @@ export async function HashedPassword(pwd: string) {
 export async function VerifyPassword(pwd: string, hashed: string) {
     return await bcrypt.compare(pwd, hashed);
 }
+
